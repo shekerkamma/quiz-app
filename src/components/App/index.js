@@ -13,17 +13,19 @@ const App = () => {
   const [loadingMessage, setLoadingMessage] = useState(null);
   const [data, setData] = useState(null);
   const [countdownTime, setCountdownTime] = useState(null);
+  const [perQuestionTime, setPerQuestionTime] = useState(0);
   const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [resultData, setResultData] = useState(null);
 
-  const startQuiz = (data, countdownTime) => {
+  const startQuiz = (data, countdownTime, perQuestionTime) => {
     setLoading(true);
     setLoadingMessage({
       title: 'Loading your quiz...',
       message: "It won't be long!",
     });
     setCountdownTime(countdownTime);
+    setPerQuestionTime(perQuestionTime);
 
     setTimeout(() => {
       setData(data);
@@ -79,6 +81,7 @@ const App = () => {
     setTimeout(() => {
       setData(null);
       setCountdownTime(null);
+      setPerQuestionTime(0);
       setIsQuizStarted(false);
       setIsQuizCompleted(false);
       setResultData(null);
@@ -93,7 +96,12 @@ const App = () => {
         <Main startQuiz={startQuiz} />
       )}
       {!loading && isQuizStarted && (
-        <Quiz data={data} countdownTime={countdownTime} endQuiz={endQuiz} />
+        <Quiz
+          data={data}
+          countdownTime={countdownTime}
+          perQuestionTime={perQuestionTime}
+          endQuiz={endQuiz}
+        />
       )}
       {!loading && isQuizCompleted && (
         <Result {...resultData} replayQuiz={replayQuiz} resetQuiz={resetQuiz} />

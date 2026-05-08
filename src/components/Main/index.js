@@ -18,6 +18,7 @@ import {
   DIFFICULTY,
   QUESTIONS_TYPE,
   COUNTDOWN_TIME,
+  PER_QUESTION_TIME,
 } from '../../constants';
 import { shuffle } from '../../utils';
 
@@ -33,6 +34,7 @@ const Main = ({ startQuiz }) => {
     minutes: 120,
     seconds: 0,
   });
+  const [perQuestionTime, setPerQuestionTime] = useState(30);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [offline, setOffline] = useState(false);
@@ -94,7 +96,8 @@ const Main = ({ startQuiz }) => {
           setProcessing(false);
           startQuiz(
             results,
-            countdownTime.hours + countdownTime.minutes + countdownTime.seconds
+            countdownTime.hours + countdownTime.minutes + countdownTime.seconds,
+            perQuestionTime
           );
         }, 1000)
       )
@@ -214,6 +217,20 @@ const Main = ({ startQuiz }) => {
                   options={COUNTDOWN_TIME.seconds}
                   value={countdownTime.seconds}
                   onChange={handleTimeChange}
+                  disabled={processing}
+                />
+                <br />
+                <br />
+                <p>How long should each question be timed (auto-advances when time runs out)?</p>
+                <Dropdown
+                  fluid
+                  selection
+                  name="perQuestionTime"
+                  placeholder="Select Per-Question Time Limit"
+                  header="Select Per-Question Time Limit"
+                  options={PER_QUESTION_TIME}
+                  value={perQuestionTime}
+                  onChange={(e, { value }) => setPerQuestionTime(value)}
                   disabled={processing}
                 />
               </Item.Meta>

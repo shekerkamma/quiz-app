@@ -12,5 +12,6 @@ export const Quiz = Template.bind({});
 Quiz.args = {
   data,
   countdownTime: 120,
+  perQuestionTime: 30,
   endQuiz: () => {},
 };

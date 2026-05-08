@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Container,
@@ -10,22 +10,44 @@ import {
   Message,
   Menu,
   Header,
+  Progress,
 } from 'semantic-ui-react';
 import he from 'he';
 
 import Countdown from '../Countdown';
 import { getLetter } from '../../utils';
 
-const Quiz = ({ data, countdownTime, endQuiz }) => {
+const Quiz = ({ data, countdownTime, perQuestionTime, endQuiz }) => {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [userSlectedAns, setUserSlectedAns] = useState(null);
   const [questionsAndAnswers, setQuestionsAndAnswers] = useState([]);
   const [timeTaken, setTimeTaken] = useState(null);
+  const [questionTimeLeft, setQuestionTimeLeft] = useState(perQuestionTime);
+
+  const handleNextRef = useRef();
 
   useEffect(() => {
     if (questionIndex > 0) window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [questionIndex]);
+    if (perQuestionTime > 0) {
+      setQuestionTimeLeft(perQuestionTime);
+    }
+  }, [questionIndex, perQuestionTime]);
+
+  useEffect(() => {
+    if (perQuestionTime <= 0) return undefined;
+
+    if (questionTimeLeft <= 0) {
+      if (handleNextRef.current) handleNextRef.current();
+      return undefined;
+    }
+
+    const timer = setTimeout(() => {
+      setQuestionTimeLeft(t => t - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [questionTimeLeft, perQuestionTime]);
 
   const handleItemClick = (e, { name }) => {
     setUserSlectedAns(name);
@@ -60,6 +82,8 @@ const Quiz = ({ data, countdownTime, endQuiz }) => {
     setQuestionsAndAnswers(qna);
   };
 
+  handleNextRef.current = handleNext;
+
   const timeOver = timeTaken => {
     return endQuiz({
       totalQuestions: data.length,
@@ -68,6 +92,11 @@ const Quiz = ({ data, countdownTime, endQuiz }) => {
       questionsAndAnswers,
     });
   };
+
+  const timeRatio =
+    perQuestionTime > 0 ? questionTimeLeft / perQuestionTime : 0;
+  const progressColor =
+    timeRatio > 0.5 ? 'green' : timeRatio > 0.25 ? 'yellow' : 'red';
 
   return (
     <Item.Header>
@@ -90,6 +119,18 @@ const Quiz = ({ data, countdownTime, endQuiz }) => {
                   />
                 </Item.Extra>
                 <br />
+                {perQuestionTime > 0 && (
+                  <Item.Extra>
+                    <Progress
+                      value={questionTimeLeft}
+                      total={perQuestionTime}
+                      progress="value"
+                      color={progressColor}
+                      size="small"
+                      label={`Time remaining for this question: ${questionTimeLeft}s`}
+                    />
+                  </Item.Extra>
+                )}
                 <Item.Meta>
                   <Message size="huge" floating>
                     <b>{`Q. ${he.decode(data[questionIndex].question)}`}</b>
@@ -144,7 +185,12 @@ const Quiz = ({ data, countdownTime, endQuiz }) => {
 Quiz.propTypes = {
   data: PropTypes.array.isRequired,
   countdownTime: PropTypes.number.isRequired,
+  perQuestionTime: PropTypes.number,
   endQuiz: PropTypes.func.isRequired,
+};
+
+Quiz.defaultProps = {
+  perQuestionTime: 0,
 };
 
 export default Quiz;
