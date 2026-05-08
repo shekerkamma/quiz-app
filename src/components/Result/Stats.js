@@ -8,11 +8,13 @@ import { calculateScore, calculateGrade, timeConverter } from '../../utils';
 const Stats = ({
   totalQuestions,
   correctAnswers,
+  skippedQuestions,
   timeTaken,
   replayQuiz,
   resetQuiz,
 }) => {
-  const score = calculateScore(totalQuestions, correctAnswers);
+  const scoredQuestions = Math.max(0, totalQuestions - skippedQuestions);
+  const score = calculateScore(scoredQuestions, correctAnswers);
   const { grade, remarks } = calculateGrade(score);
   const { hours, minutes, seconds } = timeConverter(timeTaken);
 
@@ -30,6 +32,11 @@ const Stats = ({
       <Header as="h3" textAlign="center" block>
         Correct Answers: {correctAnswers}
       </Header>
+      {skippedQuestions > 0 && (
+        <Header as="h3" textAlign="center" block>
+          Skipped Questions: {skippedQuestions}
+        </Header>
+      )}
       <Header as="h3" textAlign="center" block>
         Your Score: {score}%
       </Header>
@@ -68,9 +75,14 @@ const Stats = ({
 Stats.propTypes = {
   totalQuestions: PropTypes.number.isRequired,
   correctAnswers: PropTypes.number.isRequired,
+  skippedQuestions: PropTypes.number,
   timeTaken: PropTypes.number.isRequired,
   replayQuiz: PropTypes.func.isRequired,
   resetQuiz: PropTypes.func.isRequired,
+};
+
+Stats.defaultProps = {
+  skippedQuestions: 0,
 };
 
 export default Stats;

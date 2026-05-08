@@ -8,6 +8,7 @@ import QNA from './QNA';
 const Result = ({
   totalQuestions,
   correctAnswers,
+  skippedQuestions,
   timeTaken,
   questionsAndAnswers,
   replayQuiz,
@@ -37,6 +38,7 @@ const Result = ({
         <Stats
           totalQuestions={totalQuestions}
           correctAnswers={correctAnswers}
+          skippedQuestions={skippedQuestions}
           timeTaken={timeTaken}
           replayQuiz={replayQuiz}
           resetQuiz={resetQuiz}
@@ -51,10 +53,15 @@ const Result = ({
 Result.propTypes = {
   totalQuestions: PropTypes.number.isRequired,
   correctAnswers: PropTypes.number.isRequired,
+  skippedQuestions: PropTypes.number,
   timeTaken: PropTypes.number.isRequired,
   questionsAndAnswers: PropTypes.array.isRequired,
   replayQuiz: PropTypes.func.isRequired,
   resetQuiz: PropTypes.func.isRequired,
+};
+
+Result.defaultProps = {
+  skippedQuestions: 0,
 };
 
 export default Result;

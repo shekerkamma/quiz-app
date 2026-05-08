@@ -13,17 +13,22 @@ const App = () => {
   const [loadingMessage, setLoadingMessage] = useState(null);
   const [data, setData] = useState(null);
   const [countdownTime, setCountdownTime] = useState(null);
+  const [powerups, setPowerups] = useState({
+    enableFiftyFifty: false,
+    enableSkip: false,
+  });
   const [isQuizStarted, setIsQuizStarted] = useState(false);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [resultData, setResultData] = useState(null);
 
-  const startQuiz = (data, countdownTime) => {
+  const startQuiz = (data, countdownTime, powerupsConfig) => {
     setLoading(true);
     setLoadingMessage({
       title: 'Loading your quiz...',
       message: "It won't be long!",
     });
     setCountdownTime(countdownTime);
+    if (powerupsConfig) setPowerups(powerupsConfig);
 
     setTimeout(() => {
       setData(data);
@@ -93,7 +98,12 @@ const App = () => {
         <Main startQuiz={startQuiz} />
       )}
       {!loading && isQuizStarted && (
-        <Quiz data={data} countdownTime={countdownTime} endQuiz={endQuiz} />
+        <Quiz
+          data={data}
+          countdownTime={countdownTime}
+          powerups={powerups}
+          endQuiz={endQuiz}
+        />
       )}
       {!loading && isQuizCompleted && (
         <Result {...resultData} replayQuiz={replayQuiz} resetQuiz={resetQuiz} />

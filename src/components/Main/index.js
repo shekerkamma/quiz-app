@@ -8,6 +8,7 @@ import {
   Divider,
   Button,
   Message,
+  Checkbox,
 } from 'semantic-ui-react';
 
 import mindImg from '../../images/mind.svg';
@@ -33,6 +34,8 @@ const Main = ({ startQuiz }) => {
     minutes: 120,
     seconds: 0,
   });
+  const [enableFiftyFifty, setEnableFiftyFifty] = useState(false);
+  const [enableSkip, setEnableSkip] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
   const [offline, setOffline] = useState(false);
@@ -94,7 +97,8 @@ const Main = ({ startQuiz }) => {
           setProcessing(false);
           startQuiz(
             results,
-            countdownTime.hours + countdownTime.minutes + countdownTime.seconds
+            countdownTime.hours + countdownTime.minutes + countdownTime.seconds,
+            { enableFiftyFifty, enableSkip }
           );
         }, 1000)
       )
@@ -216,6 +220,27 @@ const Main = ({ startQuiz }) => {
                   onChange={handleTimeChange}
                   disabled={processing}
                 />
+                <br />
+                <br />
+                <p>Powerups (each can be used once per quiz):</p>
+                <div style={{ marginBottom: 8 }}>
+                  <Checkbox
+                    label="50/50 — eliminate two incorrect answers"
+                    checked={enableFiftyFifty}
+                    onChange={(e, { checked }) =>
+                      setEnableFiftyFifty(checked)
+                    }
+                    disabled={processing}
+                  />
+                </div>
+                <div>
+                  <Checkbox
+                    label="Skip — skip a question without losing points"
+                    checked={enableSkip}
+                    onChange={(e, { checked }) => setEnableSkip(checked)}
+                    disabled={processing}
+                  />
+                </div>
               </Item.Meta>
               <Divider />
               <Item.Extra>
